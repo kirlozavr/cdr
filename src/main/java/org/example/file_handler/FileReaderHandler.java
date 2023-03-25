@@ -37,6 +37,7 @@ public class FileReaderHandler {
             );
             dataBaseHelper.insert(subscriberEntity);
         }
+        bufferedReader.close();
         dataBaseHelper.close();
     }
 }
