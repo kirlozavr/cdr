@@ -50,28 +50,44 @@ public class SubscriberEntity {
         return tariff;
     }
 
-    public int getDurationToHours(){
+    public String getStartTimeOutFormat() {
+        return DateMapper.getLocalDateTimeToString(
+                DateMapper.getStringToLocaleDateTime(
+                        getStartTime()
+                )
+        );
+    }
+
+    public String getEndTimeOutFormat() {
+        return DateMapper.getLocalDateTimeToString(
+                DateMapper.getStringToLocaleDateTime(
+                        getEndTime()
+                )
+        );
+    }
+
+    public int getDurationToHours() {
         return Duration.between(
                 DateMapper.getStringToLocaleDateTime(startTime),
                 DateMapper.getStringToLocaleDateTime(endTime)
         ).toHoursPart();
     }
 
-    public int getDurationToMinutes(){
+    public int getDurationToMinutes() {
         return Duration.between(
                 DateMapper.getStringToLocaleDateTime(startTime),
                 DateMapper.getStringToLocaleDateTime(endTime)
         ).toMinutesPart();
     }
 
-    public int getDurationToSeconds(){
+    public int getDurationToSeconds() {
         return Duration.between(
                 DateMapper.getStringToLocaleDateTime(startTime),
                 DateMapper.getStringToLocaleDateTime(endTime)
         ).toSecondsPart();
     }
 
-    public String getDurationToString(){
+    public String getDurationToString() {
         LocalTime localTime = LocalTime.of(
                 getDurationToHours(),
                 getDurationToMinutes(),
