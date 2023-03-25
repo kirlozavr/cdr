@@ -1,7 +1,8 @@
 package org.example.entity;
 
+import org.example.mapper.DateMapper;
+
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
@@ -9,8 +10,8 @@ public class SubscriberEntity {
 
     private String phoneNumber;
     private String callType;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
+    private String startTime;
+    private String endTime;
     private String tariff;
     private static final String FORMAT_TIME = "HH:mm:ss";
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(FORMAT_TIME);
@@ -18,8 +19,8 @@ public class SubscriberEntity {
     public SubscriberEntity(
             String phoneNumber,
             String callType,
-            LocalDateTime startTime,
-            LocalDateTime endTime,
+            String startTime,
+            String endTime,
             String tariff
     ) {
         this.phoneNumber = phoneNumber;
@@ -37,11 +38,11 @@ public class SubscriberEntity {
         return callType;
     }
 
-    public LocalDateTime getStartTime() {
+    public String getStartTime() {
         return startTime;
     }
 
-    public LocalDateTime getEndTime() {
+    public String getEndTime() {
         return endTime;
     }
 
@@ -50,15 +51,24 @@ public class SubscriberEntity {
     }
 
     public int getDurationToHours(){
-        return Duration.between(startTime, endTime).toHoursPart();
+        return Duration.between(
+                DateMapper.getStringToLocaleDateTime(startTime),
+                DateMapper.getStringToLocaleDateTime(endTime)
+        ).toHoursPart();
     }
 
     public int getDurationToMinutes(){
-        return Duration.between(startTime, endTime).toMinutesPart();
+        return Duration.between(
+                DateMapper.getStringToLocaleDateTime(startTime),
+                DateMapper.getStringToLocaleDateTime(endTime)
+        ).toMinutesPart();
     }
 
     public int getDurationToSeconds(){
-        return Duration.between(startTime, endTime).toSecondsPart();
+        return Duration.between(
+                DateMapper.getStringToLocaleDateTime(startTime),
+                DateMapper.getStringToLocaleDateTime(endTime)
+        ).toSecondsPart();
     }
 
     public String getDurationToString(){
