@@ -23,12 +23,14 @@ public class ReportGenerator {
         dataBaseHelper.connection();
     }
 
+    /** Метод для чтения файла и записи информации в БД **/
     public void readFileAndInsertToDataBase() throws IOException, SQLException, ClassNotFoundException {
         FileReaderHandler fileReaderHandler =
                 new FileReaderHandler("C:\\Users\\kirlo\\IdeaProjects\\cdr\\src\\main\\resources\\cdr");
         fileReaderHandler.readAndInsertToDataBase();
     }
 
+    /** Метод для записи отчетов в файлы **/
     public void writeReportFiles() throws IOException, SQLException {
         for(String phoneNumber : phoneNumberList){
             FileWriterHandler fileWriterHandler = new FileWriterHandler("report_" + phoneNumber);
@@ -39,13 +41,16 @@ public class ReportGenerator {
         }
     }
 
+    /** Метод получения уникальных номеров из БД, для дальнейшего формирования отчетов **/
     public void getDistinctionEntity() throws SQLException {
          phoneNumberList = dataBaseHelper.getDistinctPhoneNumbers();
     }
+
     public void closeDB() throws SQLException {
         dataBaseHelper.close();
     }
 
+    /** Метод получения сущности для отчета, сущность формируется в зависимости от тарифа **/
     private SubscriberEntityReport getSubscriberEntityReport(List<SubscriberEntity> entityList){
         String phoneNumber = entityList.get(0).getPhoneNumber();
         String tariff = entityList.get(0).getTariff();
@@ -58,6 +63,7 @@ public class ReportGenerator {
         }
     }
 
+    /** Метод расчета конечной стоимости для тарифа "Поминутный" **/
     private SubscriberEntityReport tariffPerMinute(
             String phoneNumber,
             String tariff,
@@ -89,6 +95,7 @@ public class ReportGenerator {
         );
     }
 
+    /** Метод расчета конечной стоимости для тарифа "Безлимитный" **/
     private SubscriberEntityReport tariffUnlimited(
             String phoneNumber,
             String tariff,
@@ -137,6 +144,7 @@ public class ReportGenerator {
         );
     }
 
+    /** Метод расчета конечной стоимости для тарифа "Обычный" **/
     private SubscriberEntityReport tariffOrdinary(
             String phoneNumber,
             String tariff,
