@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DataBaseHelper {
-    private static final String CONNECT_DB = "jdbc:sqlite:C:/sqlite/db/subscriber.db";
+
+    private static final String DATA_BASE_NAME = "subscriber.db";
+    private static final String CONNECT_DB = "jdbc:sqlite:C:\\Users\\kirlo\\IdeaProjects\\cdr\\src\\main\\resources\\database\\";
     public static final String TABLE_NAME = "subscriber";
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_PHONE_NUMBER = "phone_number";
@@ -27,37 +29,45 @@ public class DataBaseHelper {
     private Connection connection;
     private Statement statement;
     private ResultSet resultSet;
+    private PreparedStatement preparedStatement;
 
     public void connection() throws SQLException, ClassNotFoundException {
         Class.forName("org.sqlite.JDBC");
-        connection = DriverManager.getConnection(CONNECT_DB);
+        connection = DriverManager.getConnection(CONNECT_DB + DATA_BASE_NAME);
     }
 
     public void close() throws SQLException {
         connection.close();
+        if(statement != null){
+            statement.close();
+        }
+        if(resultSet != null){
+            resultSet.close();
+        }
+        if(preparedStatement != null){
+            preparedStatement.close();
+        }
     }
 
     public void crateTable(String query) throws SQLException {
         statement = connection.createStatement();
         statement.execute(query);
-        statement.close();
     }
 
     public void insert(SubscriberEntity subscriberEntity) throws SQLException {
-        statement = connection.createStatement();
-        statement.execute(
+        preparedStatement = connection.prepareStatement(
                 "INSERT INTO " + TABLE_NAME + " ("
-                        + COLUMN_PHONE_NUMBER + ", "
-                        + COLUMN_CALL_TYPE + ", "
-                        + COLUMN_START_TIME + ", "
-                        + COLUMN_END_TIME + ", "
-                        + COLUMN_TARIFF + ") VALUES ("
-                        + subscriberEntity.getPhoneNumber() + ", "
-                        + subscriberEntity.getCallType() + ", "
-                        + subscriberEntity.getStartTime() + ", "
-                        + subscriberEntity.getEndTime() + ", "
-                        + subscriberEntity.getTariff() + ");");
-        statement.close();
+                + COLUMN_PHONE_NUMBER + ", "
+                + COLUMN_CALL_TYPE + ", "
+                + COLUMN_START_TIME + ", "
+                + COLUMN_END_TIME + ", "
+                + COLUMN_TARIFF + ") VALUES (?, ?, ?, ?, ?);");
+        preparedStatement.setString(1, subscriberEntity.getPhoneNumber());
+        preparedStatement.setString(2, subscriberEntity.getCallType());
+        preparedStatement.setString(3, subscriberEntity.getStartTime());
+        preparedStatement.setString(4, subscriberEntity.getEndTime());
+        preparedStatement.setString(5, subscriberEntity.getTariff());
+        preparedStatement.executeUpdate();
     }
 
     public List<SubscriberEntity> getAllEntity() throws SQLException {
@@ -66,16 +76,22 @@ public class DataBaseHelper {
         return getEntityToList();
     }
 
-    public List<SubscriberEntity> getDistinctPhoneNumbers() throws SQLException {
+    public List<String> getDistinctPhoneNumbers() throws SQLException {
+        List<String> phoneNumberList = new ArrayList<>();
         statement = connection.createStatement();
         resultSet = statement.executeQuery("SELECT DISTINCT " + COLUMN_PHONE_NUMBER + " FROM " + TABLE_NAME + ";");
-        return getEntityToList();
+        while (resultSet.next()){
+            phoneNumberList.add(resultSet.getString(COLUMN_PHONE_NUMBER));
+        }
+        return phoneNumberList;
     }
 
     public List<SubscriberEntity> getEntitiesByPhoneNumber(String phoneNumber) throws SQLException {
-        statement = connection.createStatement();
-        resultSet = statement.executeQuery("SELECT * FROM " + TABLE_NAME
-                + "WHERE " + COLUMN_PHONE_NUMBER + " = " + phoneNumber + ";");
+        preparedStatement = connection.prepareStatement(
+                "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_PHONE_NUMBER + " = ?;"
+        );
+        preparedStatement.setString(1, phoneNumber);
+        resultSet = preparedStatement.executeQuery();
         return getEntityToList();
     }
 
@@ -91,8 +107,6 @@ public class DataBaseHelper {
             );
             entityList.add(entity);
         }
-        resultSet.close();
-        statement.close();
         return entityList;
     }
 }
