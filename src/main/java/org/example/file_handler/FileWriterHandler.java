@@ -10,10 +10,11 @@ import java.text.DecimalFormat;
 
 public class FileWriterHandler {
 
+    private static final String FILE_PATH = "..\\cdr\\src\\main\\resources\\reports\\";
     private FileWriter fileWriter;
 
     public FileWriterHandler(String fileName) throws IOException {
-        File file = new File("C:\\Users\\kirlo\\IdeaProjects\\cdr\\src\\main\\resources\\reports\\" + fileName + ".txt");
+        File file = new File(FILE_PATH + fileName + ".txt");
         fileWriter = new FileWriter(file);
     }
 

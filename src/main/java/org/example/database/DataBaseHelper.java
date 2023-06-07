@@ -9,7 +9,7 @@ import java.util.List;
 public class DataBaseHelper {
 
     private static final String DATA_BASE_NAME = "subscriber.db";
-    private static final String CONNECT_DB = "jdbc:sqlite:C:\\Users\\kirlo\\IdeaProjects\\cdr\\src\\main\\resources\\database\\";
+    private static final String CONNECT_DB = "jdbc:sqlite:..\\cdr\\src\\main\\resources\\database\\";
     public static final String TABLE_NAME = "subscriber";
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_PHONE_NUMBER = "phone_number";

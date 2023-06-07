@@ -11,12 +11,13 @@ import java.sql.SQLException;
 
 public class FileReaderHandler {
 
+    private static final String FILE_PATH = "..\\cdr\\src\\main\\resources\\cdr";
     private FileReader fileReader;
     private BufferedReader bufferedReader;
     private DataBaseHelper dataBaseHelper;
 
-    public FileReaderHandler(String fileName) throws FileNotFoundException {
-        fileReader = new FileReader(fileName);
+    public FileReaderHandler() throws FileNotFoundException {
+        fileReader = new FileReader(FILE_PATH);
         bufferedReader = new BufferedReader(fileReader);
         dataBaseHelper = new DataBaseHelper();
     }
