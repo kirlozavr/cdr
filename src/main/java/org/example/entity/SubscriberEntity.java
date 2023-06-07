@@ -51,7 +51,7 @@ public class SubscriberEntity {
     }
 
     public String getStartTimeOutFormat() {
-        return DateMapper.getLocalDateTimeToString(
+        return DateMapper.getLocalDateTimeToStringInput(
                 DateMapper.getStringToLocaleDateTime(
                         getStartTime()
                 )
@@ -59,7 +59,7 @@ public class SubscriberEntity {
     }
 
     public String getEndTimeOutFormat() {
-        return DateMapper.getLocalDateTimeToString(
+        return DateMapper.getLocalDateTimeToStringInput(
                 DateMapper.getStringToLocaleDateTime(
                         getEndTime()
                 )

@@ -23,15 +23,23 @@ public class ReportGenerator {
         dataBaseHelper.connection();
     }
 
-    /** Метод для чтения файла и записи информации в БД **/
-    public void readFileAndInsertToDataBase() throws IOException, SQLException, ClassNotFoundException {
+    public void run() throws SQLException, IOException, ClassNotFoundException {
+        readFileAndInsertToDataBase();
+        writeReportFiles();
+        closeDB();
+    }
+
+    /** Метод для чтения файла cdr и записи информации в БД **/
+    private void readFileAndInsertToDataBase() throws IOException, SQLException, ClassNotFoundException {
         FileReaderHandler fileReaderHandler =
-                new FileReaderHandler("C:\\Users\\kirlo\\IdeaProjects\\cdr\\src\\main\\resources\\cdr");
+                new FileReaderHandler();
         fileReaderHandler.readAndInsertToDataBase();
     }
 
     /** Метод для записи отчетов в файлы **/
-    public void writeReportFiles() throws IOException, SQLException {
+    private void writeReportFiles() throws IOException, SQLException {
+        getDistinctionEntity();
+
         for(String phoneNumber : phoneNumberList){
             FileWriterHandler fileWriterHandler = new FileWriterHandler("report_" + phoneNumber);
             SubscriberEntityReport subscriberEntityReport = getSubscriberEntityReport(
@@ -42,11 +50,11 @@ public class ReportGenerator {
     }
 
     /** Метод получения уникальных номеров из БД, для дальнейшего формирования отчетов **/
-    public void getDistinctionEntity() throws SQLException {
+    private void getDistinctionEntity() throws SQLException {
          phoneNumberList = dataBaseHelper.getDistinctPhoneNumbers();
     }
 
-    public void closeDB() throws SQLException {
+    private void closeDB() throws SQLException {
         dataBaseHelper.close();
     }
 
