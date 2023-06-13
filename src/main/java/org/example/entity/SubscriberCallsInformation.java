@@ -1,12 +1,13 @@
 package org.example.entity;
 
+/** Сущность с информацией о звонке для отчета **/
 public class SubscriberCallsInformation {
 
-    private String callType;
-    private String startTime;
-    private String endTime;
-    private String duration;
-    private float cost;
+    private String callType; // Тип вызова, 01 или 02
+    private String startTime; // Время начала звонка
+    private String endTime; // Время окончания звонка
+    private String duration; // Продолжительность звонка
+    private float cost; // Стоимость звонка
 
     public SubscriberCallsInformation(
             String callType,

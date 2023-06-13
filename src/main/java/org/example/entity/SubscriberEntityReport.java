@@ -2,12 +2,13 @@ package org.example.entity;
 
 import java.util.List;
 
+/** Сущность для формирования отчета **/
 public class SubscriberEntityReport {
 
-    private String phoneNumber;
-    private String tariff;
-    private float totalCost;
-    private List<SubscriberCallsInformation> callsInformationList;
+    private String phoneNumber; // Номер телефона
+    private String tariff; // Индекс тарифа
+    private float totalCost; // Полная стоимость по итогам тарификации
+    private List<SubscriberCallsInformation> callsInformationList; // Список сущностей звонков совершенных данным абонентом
 
     public SubscriberEntityReport(
             String phoneNumber,

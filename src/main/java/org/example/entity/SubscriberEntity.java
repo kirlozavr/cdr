@@ -6,13 +6,14 @@ import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
+/** Сущность с информацией из CDR **/
 public class SubscriberEntity {
 
-    private String phoneNumber;
-    private String callType;
-    private String startTime;
-    private String endTime;
-    private String tariff;
+    private String phoneNumber; // Номер телефона
+    private String callType; // Тип вызова
+    private String startTime; // Время начала звонка
+    private String endTime; // Время конца звонка
+    private String tariff; // Индекс тарифа
     private static final String FORMAT_TIME = "HH:mm:ss";
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(FORMAT_TIME);
 

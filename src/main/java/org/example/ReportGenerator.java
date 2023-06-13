@@ -23,24 +23,31 @@ public class ReportGenerator {
         dataBaseHelper.connection();
     }
 
+    /**
+     * Метод для запуска программы
+     **/
     public void run() throws SQLException, IOException, ClassNotFoundException {
         readFileAndInsertToDataBase();
         writeReportFiles();
         closeDB();
     }
 
-    /** Метод для чтения файла cdr и записи информации в БД **/
+    /**
+     * Метод для чтения файла cdr и записи информации в БД
+     **/
     private void readFileAndInsertToDataBase() throws IOException, SQLException, ClassNotFoundException {
         FileReaderHandler fileReaderHandler =
                 new FileReaderHandler();
         fileReaderHandler.readAndInsertToDataBase();
     }
 
-    /** Метод для записи отчетов в файлы **/
+    /**
+     * Метод для записи отчетов в файлы
+     **/
     private void writeReportFiles() throws IOException, SQLException {
         getDistinctionEntity();
 
-        for(String phoneNumber : phoneNumberList){
+        for (String phoneNumber : phoneNumberList) {
             FileWriterHandler fileWriterHandler = new FileWriterHandler("report_" + phoneNumber);
             SubscriberEntityReport subscriberEntityReport = getSubscriberEntityReport(
                     dataBaseHelper.getEntitiesByPhoneNumber(phoneNumber)
@@ -49,53 +56,64 @@ public class ReportGenerator {
         }
     }
 
-    /** Метод получения уникальных номеров из БД, для дальнейшего формирования отчетов **/
+    /**
+     * Метод получения уникальных номеров из БД, для дальнейшего формирования отчетов
+     **/
     private void getDistinctionEntity() throws SQLException {
-         phoneNumberList = dataBaseHelper.getDistinctPhoneNumbers();
+        phoneNumberList = dataBaseHelper.getDistinctPhoneNumbers();
     }
 
+    /**
+     * Метод закрывает соединение с БД
+     **/
     private void closeDB() throws SQLException {
         dataBaseHelper.close();
     }
 
-    /** Метод получения сущности для отчета, сущность формируется в зависимости от тарифа **/
-    private SubscriberEntityReport getSubscriberEntityReport(List<SubscriberEntity> entityList){
+    /**
+     * Метод получения сущности для отчета, сущность формируется в зависимости от тарифа
+     **/
+    private SubscriberEntityReport getSubscriberEntityReport(List<SubscriberEntity> entityList) {
         String phoneNumber = entityList.get(0).getPhoneNumber();
         String tariff = entityList.get(0).getTariff();
-        if(tariff.equals("06")){
+        if (tariff.equals("06")) {
             return tariffUnlimited(phoneNumber, tariff, entityList);
         } else if (tariff.equals("03")) {
             return tariffPerMinute(phoneNumber, tariff, entityList);
-        } else{
+        } else {
             return tariffOrdinary(phoneNumber, tariff, entityList);
         }
     }
 
-    /** Метод расчета конечной стоимости для тарифа "Поминутный" **/
+    /**
+     * Метод расчета конечной стоимости для тарифа "Поминутный".
+     * На вход в метод приходит номер телефона абонента, его тариф и список всех звонков которые он совершил.
+     **/
     private SubscriberEntityReport tariffPerMinute(
             String phoneNumber,
             String tariff,
-            List<SubscriberEntity> entityList
-    ){
-        float totalCost = 0;
-        List<SubscriberCallsInformation> callsInformationList = new ArrayList<>();
-        for(SubscriberEntity entity : entityList){
+            List<SubscriberEntity> entityList // Список объектов с информацией о звонке из CDR файла
+    ) {
+        float totalCost = 0; // Полная стоимость услуг
+        List<SubscriberCallsInformation> callsInformationList = new ArrayList<>(); // Список с информацией о звонках совершенных этим пользователем
+        // В цикле происходит перебор объектов из CDR и формируется новый список с информацией нужного формата для отчета
+        for (SubscriberEntity entity : entityList) {
             SubscriberCallsInformation callsInformation = new SubscriberCallsInformation(
-                    entity.getCallType(),
-                    entity.getStartTimeOutFormat(),
-                    entity.getEndTimeOutFormat(),
-                    entity.getDurationToString(),
-                    (entity.getDurationToMinutes() * 1.5f)
+                    entity.getCallType(), // Тип вызова
+                    entity.getStartTimeOutFormat(), // Начало звонка в нужном формате
+                    entity.getEndTimeOutFormat(), // Конец звонка в нужном формате
+                    entity.getDurationToString(), // Продолжительность звонка в нужном формате
+                    (entity.getDurationToMinutes() * 1.5f) // Стоимость звонка
             );
             callsInformationList.add(callsInformation);
-            totalCost += callsInformation.getCost();
+            totalCost += callsInformation.getCost(); // Считается полная стоимость услуг
         }
+        // Результатом работы метода явлеяется объект SubscriberEntityReport
         return new SubscriberEntityReport(
-                phoneNumber,
-                tariff,
-                totalCost,
-                callsInformationList
-                        .stream()
+                phoneNumber, // Номер телефона
+                tariff, // Индекс тарифа
+                totalCost, // Полная стоимость услуг
+                callsInformationList.stream() // Список звонков совершенных данным абонентом, список сортируется по типу вызова и дате начала звонка
                         .sorted(
                                 Comparator.comparing(SubscriberCallsInformation::getCallType)
                                         .thenComparing(SubscriberCallsInformation::getStartTime)
@@ -103,48 +121,50 @@ public class ReportGenerator {
         );
     }
 
-    /** Метод расчета конечной стоимости для тарифа "Безлимитный" **/
+    /**
+     * Метод расчета конечной стоимости для тарифа "Безлимитный".
+     * На вход в метод приходит номер телефона абонента, его тариф и список всех звонков которые он совершил.
+     **/
     private SubscriberEntityReport tariffUnlimited(
             String phoneNumber,
             String tariff,
             List<SubscriberEntity> entityList
-    ){
-        int totalMinute = 300;
-        int totalCost = 0;
-        List<SubscriberCallsInformation> callsInformationList = new ArrayList<>();
+    ) {
+        int totalMinute = 300; // Лимит минут для тарифа
+        int totalCost = 0; // Полная стоимость услуг
+        List<SubscriberCallsInformation> callsInformationList = new ArrayList<>(); // Список с информацией о звонках совершенных этим пользователем
 
-        for(SubscriberEntity entity : entityList){
-            float cost = 0;
+        // В цикле происходит перебор объектов из CDR и формируется новый список с информацией нужного формата для отчета
+        for (SubscriberEntity entity : entityList) {
+            float cost = 0; // Стоимость звонка
 
-            if(totalMinute < entity.getDurationToMinutes() && totalMinute > 0){
+            // Если лимит минут меньше продолжительности звонка и лимит больше 0
+            if (totalMinute < entity.getDurationToMinutes() && totalMinute > 0) {
                 cost = totalMinute - entity.getDurationToMinutes();
                 totalCost += cost;
             } else if (totalMinute < entity.getDurationToMinutes() && totalMinute <= 0) {
                 cost = entity.getDurationToMinutes();
                 totalCost += cost;
             }
-            totalMinute -= entity.getDurationToMinutes();
+            totalMinute -= entity.getDurationToMinutes(); // С каждой итерацией уменьшается лимит минут
 
             SubscriberCallsInformation callsInformation = new SubscriberCallsInformation(
-                    entity.getCallType(),
-                    entity.getStartTimeOutFormat(),
-                    entity.getEndTimeOutFormat(),
-                    entity.getDurationToString(),
-                    cost
+                    entity.getCallType(), // Тип звонка
+                    entity.getStartTimeOutFormat(), // Начало звонка в нужном формате
+                    entity.getEndTimeOutFormat(), // Конец звонка в нужном формате
+                    entity.getDurationToString(), // Продолжительность звонка в нужном формате
+                    cost // Стоимость звонка
             );
             callsInformationList.add(callsInformation);
         }
 
-        if (totalCost > 0){
-            totalCost += 100;
-        }
+        totalCost += 100; // К полной стоимости услуг прибавляется абонентская плата
 
         return new SubscriberEntityReport(
-                phoneNumber,
-                tariff,
-                totalCost,
-                callsInformationList
-                        .stream()
+                phoneNumber, // Номер телефона
+                tariff, // Индекс тарифа
+                totalCost, // Полная стоимость услуг
+                callsInformationList.stream() // Список звонков совершенных данным абонентом
                         .sorted(
                                 Comparator.comparing(SubscriberCallsInformation::getCallType)
                                         .thenComparing(SubscriberCallsInformation::getStartTime)
@@ -152,21 +172,25 @@ public class ReportGenerator {
         );
     }
 
-    /** Метод расчета конечной стоимости для тарифа "Обычный" **/
+    /**
+     * Метод расчета конечной стоимости для тарифа "Обычный".
+     * На вход в метод приходит номер телефона абонента, его тариф и список всех звонков которые он совершил.
+     **/
     private SubscriberEntityReport tariffOrdinary(
             String phoneNumber,
             String tariff,
             List<SubscriberEntity> entityList
-    ){
-        float totalMinute = 100;
-        float totalCost = 0;
-        List<SubscriberCallsInformation> callsInformationList = new ArrayList<>();
+    ) {
+        float totalMinute = 100; // Лимит минут
+        float totalCost = 0; // Полная стоимость услуг
+        List<SubscriberCallsInformation> callsInformationList = new ArrayList<>(); // Список звонков
 
-        for(SubscriberEntity entity : entityList){
+        // В цикле перебираются звонки совершенные этим абонентом из CDR файла
+        for (SubscriberEntity entity : entityList) {
 
-            float cost = 0;
-            if(entity.getCallType().equals("01")){
-                if(totalMinute < entity.getDurationToMinutes() && totalMinute > 0){
+            float cost = 0; // Стоимость звонка
+            if (entity.getCallType().equals("01")) { // Если звонок исходящий
+                if (totalMinute < entity.getDurationToMinutes() && totalMinute > 0) { // Если лимит минут меньше продолжительности звонка и больше 0
                     cost = (totalMinute - entity.getDurationToMinutes()) * 1.5f;
                 } else if (totalMinute < entity.getDurationToMinutes() && totalMinute <= 0) {
                     cost = entity.getDurationToMinutes() * 1.5f;
@@ -174,24 +198,24 @@ public class ReportGenerator {
                     cost = entity.getDurationToMinutes() * 0.5f;
                 }
                 totalCost += cost;
+                totalMinute -= entity.getDurationToMinutes();
             }
 
             SubscriberCallsInformation callsInformation = new SubscriberCallsInformation(
-                    entity.getCallType(),
-                    entity.getStartTimeOutFormat(),
-                    entity.getEndTimeOutFormat(),
-                    entity.getDurationToString(),
-                    cost
+                    entity.getCallType(), // Тип вызова
+                    entity.getStartTimeOutFormat(), // Время начала звонка в нужном формате
+                    entity.getEndTimeOutFormat(), // Время окончания звонка в нужном формате
+                    entity.getDurationToString(), // Продолжительность звонка в нужном формате
+                    cost // Стоимость звонка
             );
             callsInformationList.add(callsInformation);
         }
 
         return new SubscriberEntityReport(
-                phoneNumber,
-                tariff,
-                totalCost,
-                callsInformationList
-                        .stream()
+                phoneNumber, // Номер телефона
+                tariff, // Индекс тарифа
+                totalCost, // Полная стоимость услуг
+                callsInformationList.stream() // Список всех звонков совершенных данным абонентом
                         .sorted(
                                 Comparator.comparing(SubscriberCallsInformation::getCallType)
                                         .thenComparing(SubscriberCallsInformation::getStartTime)
