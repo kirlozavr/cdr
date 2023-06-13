@@ -51,7 +51,7 @@ public class SubscriberEntity {
         return tariff;
     }
 
-    public String getStartTimeOutFormat() {
+    public String getStartTimeOutFormat() { // Метод возвращает время начала звонка в нужном формате для отчета
         return DateMapper.getLocalDateTimeToStringInput(
                 DateMapper.getStringToLocaleDateTime(
                         getStartTime()
@@ -59,7 +59,7 @@ public class SubscriberEntity {
         );
     }
 
-    public String getEndTimeOutFormat() {
+    public String getEndTimeOutFormat() { // Метод возвращает время конца звонка в нужном формате для отчета
         return DateMapper.getLocalDateTimeToStringInput(
                 DateMapper.getStringToLocaleDateTime(
                         getEndTime()
@@ -67,28 +67,28 @@ public class SubscriberEntity {
         );
     }
 
-    public int getDurationToHours() {
+    public int getDurationToHours() { // Метод возвращает продолжительность звонка в часах
         return Duration.between(
                 DateMapper.getStringToLocaleDateTime(startTime),
                 DateMapper.getStringToLocaleDateTime(endTime)
         ).toHoursPart();
     }
 
-    public int getDurationToMinutes() {
+    public int getDurationToMinutes() { // Метод возвращает продолжительность звонка в минутах
         return Duration.between(
                 DateMapper.getStringToLocaleDateTime(startTime),
                 DateMapper.getStringToLocaleDateTime(endTime)
         ).toMinutesPart();
     }
 
-    public int getDurationToSeconds() {
+    public int getDurationToSeconds() { // Метод возвращает продолжительность звонка в секундах
         return Duration.between(
                 DateMapper.getStringToLocaleDateTime(startTime),
                 DateMapper.getStringToLocaleDateTime(endTime)
         ).toSecondsPart();
     }
 
-    public String getDurationToString() {
+    public String getDurationToString() { // Метод возвращает продолжительность звонка для отчета
         LocalTime localTime = LocalTime.of(
                 getDurationToHours(),
                 getDurationToMinutes(),
