@@ -94,19 +94,19 @@ public class ReportGenerator {
             String tariff,
             List<SubscriberEntity> entityList // Список объектов с информацией о звонке из CDR файла
     ) {
-        float totalCost = 0; // Полная стоимость услуг
+        // Полная стоимость услуг
         List<SubscriberCallsInformation> callsInformationList = new ArrayList<>(); // Список с информацией о звонках совершенных этим пользователем
         // В цикле происходит перебор объектов из CDR и формируется новый список с информацией нужного формата для отчета
         for (SubscriberEntity entity : entityList) {
             SubscriberCallsInformation callsInformation = new SubscriberCallsInformation(
-                    entity.getCallType(), // Тип вызова
+                    // Тип вызова
                     entity.getStartTimeOutFormat(), // Начало звонка в нужном формате
                     entity.getEndTimeOutFormat(), // Конец звонка в нужном формате
-                    entity.getDurationToString(), // Продолжительность звонка в нужном формате
-                    (entity.getDurationToMinutes() * 1.5f) // Стоимость звонка
+                    entity.getDurationToString() // Продолжительность звонка в нужном формате
+                    // Стоимость звонка
             );
-            callsInformationList.add(callsInformation);
-            totalCost += callsInformation.getCost(); // Считается полная стоимость услуг
+
+            totalCost += callsInformation // Считается полная стоимость услуг
         }
         // Результатом работы метода явлеяется объект SubscriberEntityReport
         return new SubscriberEntityReport(
@@ -130,7 +130,7 @@ public class ReportGenerator {
             String tariff,
             List<SubscriberEntity> entityList
     ) {
-        int totalMinute = 300; // Лимит минут для тарифа
+         // Лимит минут для тарифа
         int totalCost = 0; // Полная стоимость услуг
         List<SubscriberCallsInformation> callsInformationList = new ArrayList<>(); // Список с информацией о звонках совершенных этим пользователем
 
@@ -139,26 +139,27 @@ public class ReportGenerator {
             float cost = 0; // Стоимость звонка
 
             // Если лимит минут меньше продолжительности звонка и лимит больше 0
-            if (totalMinute < entity.getDurationToMinutes() && totalMinute > 0) {
-                cost = totalMinute - entity.getDurationToMinutes();
+            if ( < entity.getDurationToMinutes() &&  > 0) {
+                cost =  - entity.getDurationToMinutes();
                 totalCost += cost;
-            } else if (totalMinute < entity.getDurationToMinutes() && totalMinute <= 0) {
+                // Если лимит минут меньше продолжительности звонка и лимит меньше либо равен 0
+            } else if ( < entity.getDurationToMinutes() &&  <= 0) {
                 cost = entity.getDurationToMinutes();
                 totalCost += cost;
             }
-            totalMinute -= entity.getDurationToMinutes(); // С каждой итерацией уменьшается лимит минут
+             -= entity.getDurationToMinutes(); // С каждой итерацией уменьшается лимит минут
 
             SubscriberCallsInformation callsInformation = new SubscriberCallsInformation(
                     entity.getCallType(), // Тип звонка
                     entity.getStartTimeOutFormat(), // Начало звонка в нужном формате
                     entity.getEndTimeOutFormat(), // Конец звонка в нужном формате
-                    entity.getDurationToString(), // Продолжительность звонка в нужном формате
-                    cost // Стоимость звонка
+                    entity.getDurationToString() // Продолжительность звонка в нужном формате
+                     // Стоимость звонка
             );
             callsInformationList.add(callsInformation);
         }
 
-        totalCost += 100; // К полной стоимости услуг прибавляется абонентская плата
+         // К полной стоимости услуг прибавляется абонентская плата
 
         return new SubscriberEntityReport(
                 phoneNumber, // Номер телефона
@@ -181,7 +182,7 @@ public class ReportGenerator {
             String tariff,
             List<SubscriberEntity> entityList
     ) {
-        float totalMinute = 100; // Лимит минут
+         // Лимит минут
         float totalCost = 0; // Полная стоимость услуг
         List<SubscriberCallsInformation> callsInformationList = new ArrayList<>(); // Список звонков
 
@@ -190,15 +191,15 @@ public class ReportGenerator {
 
             float cost = 0; // Стоимость звонка
             if (entity.getCallType().equals("01")) { // Если звонок исходящий
-                if (totalMinute < entity.getDurationToMinutes() && totalMinute > 0) { // Если лимит минут меньше продолжительности звонка и больше 0
-                    cost = (totalMinute - entity.getDurationToMinutes()) * 1.5f;
-                } else if (totalMinute < entity.getDurationToMinutes() && totalMinute <= 0) {
+                if ( < entity.getDurationToMinutes() &&  > 0) { // Если лимит минут меньше продолжительности звонка и больше 0
+                    cost = ( - entity.getDurationToMinutes()) * 1.5f;
+                } else if ( < entity.getDurationToMinutes() &&  <= 0) { // Если лимит минут меньше продолжительности звонка и меньше либо равен 0
                     cost = entity.getDurationToMinutes() * 1.5f;
                 } else {
-                    cost = entity.getDurationToMinutes() * 0.5f;
+                    cost = entity.getDurationToMinutes()
                 }
                 totalCost += cost;
-                totalMinute -= entity.getDurationToMinutes();
+                 -= entity.getDurationToMinutes();
             }
 
             SubscriberCallsInformation callsInformation = new SubscriberCallsInformation(
