@@ -10,7 +10,7 @@ import java.text.DecimalFormat;
 
 public class FileWriterHandler {
 
-    private static final String FILE_PATH = ".\\cdr\\src\\main\\resources\\reports\\";
+    private static final String FILE_PATH = ".\\src\\main\\resources\\reports\\";
     private FileWriter fileWriter;
 
     public FileWriterHandler(String fileName) throws IOException {

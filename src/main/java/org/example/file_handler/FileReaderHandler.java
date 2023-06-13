@@ -11,7 +11,7 @@ import java.sql.SQLException;
 
 public class FileReaderHandler {
 
-    private static final String FILE_PATH = ".\\cdr\\src\\main\\resources\\cdr";
+    private static final String FILE_PATH = ".\\src\\main\\resources\\cdr";
     private FileReader fileReader;
     private BufferedReader bufferedReader;
     private DataBaseHelper dataBaseHelper;
