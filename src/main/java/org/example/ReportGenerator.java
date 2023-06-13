@@ -105,7 +105,7 @@ public class ReportGenerator {
                     entity.getDurationToString() // Продолжительность звонка в нужном формате
                     // Стоимость звонка
             );
-
+            // Добавляем в список SubscriberCallsInformation
             totalCost += callsInformation // Считается полная стоимость услуг
         }
         // Результатом работы метода явлеяется объект SubscriberEntityReport
@@ -154,7 +154,7 @@ public class ReportGenerator {
                     entity.getStartTimeOutFormat(), // Начало звонка в нужном формате
                     entity.getEndTimeOutFormat(), // Конец звонка в нужном формате
                     entity.getDurationToString() // Продолжительность звонка в нужном формате
-                     // Стоимость звонка
+                    // Стоимость звонка
             );
             callsInformationList.add(callsInformation);
         }
@@ -199,7 +199,7 @@ public class ReportGenerator {
                     cost = entity.getDurationToMinutes()
                 }
                 totalCost += cost;
-                 -= entity.getDurationToMinutes();
+                 -= entity.getDurationToMinutes(); // Вычитаем продолжительность звонка из лимита минут
             }
 
             SubscriberCallsInformation callsInformation = new SubscriberCallsInformation(
