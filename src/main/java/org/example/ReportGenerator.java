@@ -190,7 +190,7 @@ public class ReportGenerator {
         for (SubscriberEntity entity : entityList) {
 
             float cost = 0; // Стоимость звонка
-            if (entity.getCallType().equals("01")) { // Если звонок исходящий
+            if (entity.getCallType().equals()) { // Если звонок исходящий
                 if ( < entity.getDurationToMinutes() &&  > 0) { // Если лимит минут меньше продолжительности звонка и больше 0
                     cost = ( - entity.getDurationToMinutes()) * 1.5f;
                 } else if ( < entity.getDurationToMinutes() &&  <= 0) { // Если лимит минут меньше продолжительности звонка и меньше либо равен 0
